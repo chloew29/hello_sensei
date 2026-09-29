@@ -52,6 +52,13 @@ export default function SenseiBot() {
   const moodTimer = useRef(null);
   const petalId = useRef(0);
   const dragRef = useRef(null);
+  const tiltRef = useRef(0); // 朝鼠标方向的身体倾斜（眼神互动）
+  const curiousCd = useRef(0);
+  const burstRef = useRef(null);
+  const applyFlipRef = useRef(null);
+  applyFlipRef.current = () => {
+    if (flipRef.current) flipRef.current.style.transform = `scaleX(${pet.current.face}) rotate(${tiltRef.current}deg)`;
+  };
   const openRef = useRef(open);
   useEffect(() => { openRef.current = open; }, [open ]);
 
@@ -109,7 +116,8 @@ export default function SenseiBot() {
             const f = dx >= 0 ? 1 : -1;
             if (f !== s.face) {
               s.face = f;
-              if (flipRef.current) flipRef.current.style.transform = `scaleX(${f})`;
+              tiltRef.current = 0;
+              applyFlipRef.current?.();
             }
           }
         } else if (now >= s.until) {
@@ -172,6 +180,39 @@ export default function SenseiBot() {
     return () => window.removeEventListener("sensei-celebrate", onCelebrate);
   }, []);
 
+  // ---- 眼神互动：身体朝鼠标方向微微倾斜 ----
+  useEffect(() => {
+    const onMouse = (e) => {
+      const s = pet.current;
+      if (s.mode !== "idle" || openRef.current || dragRef.current) {
+        if (tiltRef.current !== 0) { tiltRef.current = 0; applyFlipRef.current?.(); }
+        return;
+      }
+      const cx = s.x + 80, cy = s.y + 120; // 桌宠大致中心
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.hypot(dx, dy);
+      const target = dist < 900 ? clamp(dx / 45, -7, 7) : 0; // 太远就不看了
+      if (Math.abs(target - tiltRef.current) > 0.5) {
+        tiltRef.current = target;
+        applyFlipRef.current?.();
+      }
+    };
+    window.addEventListener("mousemove", onMouse);
+    return () => window.removeEventListener("mousemove", onMouse);
+  }, []);
+
+  // ---- 环境互动：偶尔有樱花瓣在她周围飞舞 ----
+  useEffect(() => {
+    burstRef.current = burstPetals;
+    const iv = setInterval(() => {
+      if (document.hidden) return;
+      if (pet.current.mode === "held" || openRef.current) return;
+      burstRef.current?.(3);
+    }, 22000);
+    return () => clearInterval(iv);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     if (tab === "note") {
@@ -188,14 +229,36 @@ export default function SenseiBot() {
 
   const avatar = rewards?.outfits?.find((o) => o.id === rewards.active)?.file || "/teacher-anime.png";
 
+  // ---- 场景化打招呼：根据所在页面生成回应 ----
+  const contextualGreet = () => {
+    const p = window.location.pathname;
+    if (p.includes("/quiz")) return pick(["考完啦？让我看看成绩~📝", "题目难不难？抱抱~💗"]);
+    if (p.includes("/review")) return pick(["复习时间到！我陪你~📖", "温故而知新，加油！✨"]);
+    if (p.includes("/learn")) return pick(["这个单元一起加油哦！💪", "哪里不懂就问我~🌸"]);
+    if (p.includes("/course")) return "今天想学哪一课？🌸";
+    return pick(GREETS);
+  };
+
   // ---- 点击触发：惊讶 + 打招呼 + 开面板 ----
   const handlePetClick = () => {
-    pet.current.holdUntil = performance.now() + 4000;
+    const now = performance.now();
+    curiousCd.current = now + 25000;
+    pet.current.holdUntil = now + 4000;
     setWoke(true);
     setTimeout(() => setWoke(false), 600);
-    express("greet", pick(GREETS), "idle-woke", 4000);
+    express("greet", contextualGreet(), "idle-woke", 4000);
     burstPetals(10);
     setOpen((o) => !o);
+  };
+
+  // ---- 鼠标靠近：好奇地看过来 ----
+  const onPetEnter = () => {
+    const now = performance.now();
+    if (now < curiousCd.current) return;
+    if (pet.current.mode !== "idle" || openRef.current || dragRef.current) return;
+    curiousCd.current = now + 25000;
+    pet.current.holdUntil = now + 3000;
+    express("curious", pick(["嗯？找我有事吗？👀", "嘿嘿，被你发现了~😳", "怎么啦怎么啦？✨"]), "idle-listen", 3000);
   };
 
   // ---- 拖拽触发：慌张 → 放下后松口气 ----
@@ -342,6 +405,7 @@ export default function SenseiBot() {
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
+            onMouseEnter={onPetEnter}
             title="Sakura-chan: 点我聊天，拖我玩 🌸"
             aria-label="Sakura-chan"
           >
