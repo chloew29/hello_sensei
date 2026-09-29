@@ -1,6 +1,7 @@
 import { currentLearner, unauthorized, bad } from "@/lib/auth";
 import { getCourse, getProgress, saveProgress, today, addDays, daysBetween, newId, scheduleReview } from "@/lib/data";
 import { gradeTyped } from "@/lib/grading";
+import { addPetals } from "@/lib/rewards";
 
 const PASS = 0.8;
 const RECALL_FOR_MASTERY = 0.6;
@@ -59,8 +60,10 @@ export async function POST(req) {
 
   let status = null;
   let message = "";
+  let prevStatus = null;
   if (unitId !== "diagnostic") {
     const u = p.units[unitId] || { status: "learning", best: 0, attempts: 0 };
+    prevStatus = u.status || "learning";
     u.attempts += 1;
     u.best = Math.max(u.best || 0, Math.round((score / total) * 100));
     u.lastRecall = Math.round((recalled / total) * 100);
@@ -94,5 +97,13 @@ export async function POST(req) {
   p.history.push({ date: t, unitId, score, total, recalled });
   p.history = p.history.slice(-200);
   await saveProgress(courseId, learner, p);
-  return Response.json({ score, recalled, total, status, message, grades });
+
+  // Petal rewards: each correct answer earns petals; bonuses for passing/mastering.
+  let earned = score + recalled;
+  if (unitId !== "diagnostic") {
+    if (status === "mastered" && prevStatus !== "mastered") earned += 10;
+    else if (score / total >= PASS) earned += 5;
+  }
+  const rewards = await addPetals(learner, earned);
+  return Response.json({ score, recalled, total, status, message, grades, earned, petals: rewards.petals });
 }

@@ -188,3 +188,25 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 .sensei-note p { margin: 0; flex: 1; white-space: pre-wrap; }
 .sensei-note time { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
 .sensei-note button { border: none; background: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 0 2px; }
+
+/* wardrobe */
+.wardrobe { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+.outfit-card { background: var(--surface-2); border: 2px solid transparent; border-radius: 16px; padding: 8px; text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.outfit-card.active { border-color: var(--accent); box-shadow: 0 4px 14px rgba(236, 107, 160, 0.25); }
+.outfit-card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+.outfit-card b { font-size: 13px; }
+.outfit-card small { font-size: 11px; }
+
+/* kiss reward */
+.kiss-card { display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--accent-soft), transparent); border: 1px solid var(--line); border-radius: 16px; padding: 8px 10px; margin-bottom: 4px; }
+.kiss-card img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
+.kiss-card > div { flex: 1; }
+.kiss-card b { font-size: 14px; }
+.kiss-overlay { position: fixed; inset: 0; z-index: 60; background: rgba(190, 80, 120, 0.35); backdrop-filter: blur(6px); display: grid; place-items: center; animation: panel-pop .25s ease-out; cursor: pointer; }
+.kiss-pop { position: relative; text-align: center; animation: kiss-bounce .6s ease-out; }
+@keyframes kiss-bounce { 0% { transform: scale(.5); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.kiss-pop img { width: min(280px, 70vw); height: min(280px, 70vw); object-fit: cover; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 12px 44px rgba(236, 107, 160, 0.55); }
+.kiss-text { font-size: 34px; font-weight: 800; color: #fff; text-shadow: 0 2px 12px rgba(190, 60, 110, 0.8); margin-top: 10px; }
+.kiss-sub { color: #fff; font-size: 14px; text-shadow: 0 1px 8px rgba(190, 60, 110, 0.8); margin-top: 4px; }
+.kiss-heart { position: absolute; bottom: 10%; font-size: 26px; animation: heart-float 2.2s ease-in infinite; opacity: 0; pointer-events: none; }
+@keyframes heart-float { 0% { transform: translateY(0) scale(.6); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-260px) scale(1.2); opacity: 0; } }

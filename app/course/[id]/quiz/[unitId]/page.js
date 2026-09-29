@@ -61,6 +61,11 @@ function Quiz() {
             <div><div className="stat" style={{ fontSize: 34 }}>{result.score}/{result.total}</div><div className="small muted">picked correctly</div></div>
           </div>
           <p>{result.message}</p>
+          {result.earned > 0 && (
+            <div className="note" style={{ margin: "0 0 12px" }}>
+              🎉 +{result.earned} 🌸 花瓣！Sakura-chan 为你骄傲~ <span className="muted small">(共 {result.petals} 🌸，攒够了可以给老师换新衣服！)</span>
+            </div>
+          )}
           <div className="row" style={{ justifyContent: "center" }}>
             <Link href={`/course/${id}`} className="btn primary">Back to course</Link>
             {unitId !== "diagnostic" && !["learned", "mastered"].includes(result.status) && <Link href={`/course/${id}/learn/${unitId}`} className="btn">Work on it with the tutor</Link>}
