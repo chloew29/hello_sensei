@@ -105,7 +105,7 @@ function Login({ onDone }) {
   return (
     <form onSubmit={submit} style={{ maxWidth: 400, margin: "0 auto" }}>
       <div className="hero">
-        <img className="mascot" src="/sensei-chan.png" alt="Sakura-chan" />
+        <img className="mascot" src="/sensei2.png" alt="Sakura-chan" />
         <h2>Konnichiwa! 🌸</h2>
         <p className="muted">I am <b>Sensei</b>, your personal tutor. Learn any course from zero, together. Ganbatte!</p>
       </div>
