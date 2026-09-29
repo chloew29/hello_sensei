@@ -50,7 +50,7 @@ export default function Shell({ title, back, children }) {
               ‹
             </Link>
           )}
-          <h1>{title || "Study Buddy"}</h1>
+          <h1>{title || "🥋 Sensei"}</h1>
           {me && (
             <button className="btn ghost sm" onClick={signOut} title="Switch learner">
               {me.learner}
@@ -103,8 +103,8 @@ function Login({ onDone }) {
   return (
     <form onSubmit={submit} style={{ maxWidth: 400, margin: "0 auto" }}>
       <div className="hero">
-        <h2>Study Buddy</h2>
-        <p className="muted">Learn any course from zero, together.</p>
+        <h2>Konnichiwa! 🌸</h2>
+        <p className="muted">I am <b>Sensei</b>, your personal tutor. Learn any course from zero, together. Ganbatte!</p>
       </div>
       <label className="field">
         <span>Your name</span>
@@ -125,7 +125,7 @@ function Login({ onDone }) {
       </label>
       {err && <div className="error">{err}</div>}
       <button className="btn primary block" disabled={busy}>
-        {busy ? "Signing in..." : "Start"}
+        {busy ? "Entering the dojo..." : "Hajime! Start"}
       </button>
     </form>
   );

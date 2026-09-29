@@ -18,17 +18,17 @@ function Home() {
     <>
       <div className="spread" style={{ marginTop: 20 }}>
         <div>
-          <h2 style={{ margin: 0 }}>Hi {me.learner}</h2>
-          <p className="muted small" style={{ margin: 0 }}>Pick a course or start a new one.</p>
+          <h2 style={{ margin: 0 }}>Konnichiwa, {me.learner}! 🌸</h2>
+          <p className="muted small" style={{ margin: 0 }}>Choose your dojo, deshi.</p>
         </div>
-        <Link href="/new" className="btn primary">+ New course</Link>
+        <Link href="/new" className="btn primary">+ New dojo</Link>
       </div>
       {err && <div className="error">{err}</div>}
       {courses === null && !err && <p className="center muted"><span className="spinner" /></p>}
       {courses?.length === 0 && (
         <div className="card">
-          <h3>No courses yet</h3>
-          <p className="muted small">Add a course with its syllabus or slides. The tutor builds a plan from zero and you both learn from it.</p>
+          <h3>The dojo is empty 🍃</h3>
+          <p className="muted small">Add a course with its syllabus or slides. Sensei will forge your training plan from zero, and you both shall train.</p>
         </div>
       )}
       {courses?.map((c) => {

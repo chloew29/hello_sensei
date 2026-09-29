@@ -1,8 +1,8 @@
 export default function manifest() {
   return {
-    name: "Study Buddy",
-    short_name: "Study Buddy",
-    description: "Learn any course from zero, together, with an AI tutor.",
+    name: "Sensei",
+    short_name: "Sensei",
+    description: "Konnichiwa! Learn any course from zero, together, with Sensei, your personal AI tutor.",
     start_url: "/",
     display: "standalone",
     background_color: "#f7f4ee",

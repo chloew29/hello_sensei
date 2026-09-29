@@ -1,9 +1,9 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Study Buddy",
-  description: "Learn any course from zero, together, with an AI tutor.",
-  appleWebApp: { capable: true, title: "Study Buddy", statusBarStyle: "default" },
+  title: "Sensei",
+  description: "Konnichiwa! Learn any course from zero, together, with Sensei, your personal AI tutor.",
+  appleWebApp: { capable: true, title: "Sensei", statusBarStyle: "default" },
   icons: { icon: "/icon-192.png", apple: "/apple-touch-icon.png" },
 };
 
