@@ -4,7 +4,7 @@ import { api } from "./Shell";
 
 // ---- idle acts: 空闲状态 ----
 const IDLE_ACTS = [
-  { type: "sleep", img: "/teacher-anime-sleep.png", text: "Zzz… 好困…", cls: "idle-sleep" },
+  { type: "sleep", text: "Zzz… 好困…", cls: "idle-sleep" },
   { type: "snack", text: "偷吃一颗糖~ 🍡", cls: "idle-squish" },
   { type: "dance", text: "来跳个舞！💃", cls: "idle-dance" },
   { type: "wave", text: "主人还在吗？👋", cls: "idle-wave" },
@@ -16,6 +16,19 @@ const IDLE_ACTS = [
 ];
 const pickIdle = () => IDLE_ACTS[Math.floor(Math.random() * IDLE_ACTS.length)];
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// ---- 帧动画精灵：状态 -> {帧文件, 每秒帧数, once=播完一次回idle} ----
+const SPRITE = {
+  idle:      { frames: ["idle0", "idle1"], fps: 2.5, loop: true },
+  walk:      { frames: ["walk0", "walk1", "walk2", "walk3", "walk4", "walk5"], fps: 9, loop: true },
+  wave:      { frames: ["wave0", "wave1"], fps: 6, once: true },
+  happy:     { frames: ["happy0", "happy1"], fps: 7, once: true },
+  surprised: { frames: ["surprised0", "surprised1"], fps: 7, once: true },
+  sleep:     { frames: ["sleep0", "sleep1"], fps: 1.6, loop: true },
+  sit:       { frames: ["sit0"], fps: 1, loop: true },
+  drag:      { frames: ["drag0"], fps: 1, loop: true },
+};
+const frameUrl = (n) => `/pet/frames/${n}.png`;
 
 const GREETS = [
   "你好呀！有什么想问的吗？🌸",
@@ -53,6 +66,10 @@ export default function SenseiBot() {
   const petalId = useRef(0);
   const dragRef = useRef(null);
   const tiltRef = useRef(0); // 朝鼠标方向的身体倾斜（眼神互动）
+  const canvasRef = useRef(null);
+  const framesRef = useRef({}); // 预加载的帧图片 name -> HTMLImageElement
+  const spriteRef = useRef({ state: "idle", idx: 0, acc: 0 }); // 精灵状态机
+  const dirRef = useRef(1); // 走路朝向：1=右，-1=左（侧面帧镜像用）
   const curiousCd = useRef(0);
   const burstRef = useRef(null);
   const applyTiltRef = useRef(null);
@@ -69,6 +86,42 @@ export default function SenseiBot() {
     if (ms > 0) moodTimer.current = setTimeout(() => setMood(null), ms);
   };
   const clearMood = () => { clearTimeout(moodTimer.current); setMood(null); };
+
+  // ---- 精灵帧预加载 ----
+  useEffect(() => {
+    const names = [...new Set(Object.values(SPRITE).flatMap((c) => c.frames))];
+    names.forEach((n) => {
+      const img = new Image();
+      img.src = frameUrl(n);
+      framesRef.current[n] = img;
+    });
+  }, []);
+
+  const setSprite = (s) => {
+    const cur = spriteRef.current;
+    if (cur.state === s) return;
+    spriteRef.current = { state: s, idx: 0, acc: 0 };
+  };
+
+  // ---- 画当前帧到 canvas（走路朝左时镜像侧面帧，这是标准做法） ----
+  const drawSprite = () => {
+    const cv = canvasRef.current;
+    if (!cv) return;
+    const st = spriteRef.current;
+    const cfg = SPRITE[st.state];
+    const img = framesRef.current[cfg.frames[st.idx]];
+    if (!img || !img.naturalWidth) return;
+    if (cv.width !== img.naturalWidth || cv.height !== img.naturalHeight) {
+      cv.width = img.naturalWidth;
+      cv.height = img.naturalHeight;
+    }
+    const ctx = cv.getContext("2d");
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    const flip = st.state === "walk" && dirRef.current < 0;
+    if (flip) { ctx.save(); ctx.translate(cv.width, 0); ctx.scale(-1, 1); }
+    ctx.drawImage(img, 0, 0);
+    if (flip) ctx.restore();
+  };
 
   // ---- 樱花花瓣粒子：开心时撒花 ----
   const burstPetals = (n = 12) => {
@@ -115,6 +168,7 @@ export default function SenseiBot() {
           } else {
             s.x += (dx / d) * SPEED * dt;
             s.y += (dy / d) * SPEED * dt;
+            dirRef.current = dx >= 0 ? 1 : -1; // 侧面走路帧：朝左走时镜像
             // 身体朝移动方向微微倾斜，不再镜像翻转
             const lean = clamp(dx / 60, -4, 4);
             if (Math.abs(lean - tiltRef.current) > 0.3) {
@@ -143,6 +197,20 @@ export default function SenseiBot() {
         }
       }
       if (petRef.current) petRef.current.style.transform = `translate(${s.x}px, ${s.y}px)`;
+      // 精灵帧推进 + 绘制
+      const sp = spriteRef.current;
+      const cfg = SPRITE[sp.state];
+      sp.acc += dt;
+      const dur = 1 / cfg.fps;
+      if (sp.acc >= dur) {
+        sp.acc -= dur;
+        sp.idx += 1;
+        if (sp.idx >= cfg.frames.length) {
+          if (cfg.once) spriteRef.current = { state: "idle", idx: 0, acc: 0 };
+          else sp.idx = 0;
+        }
+      }
+      drawSprite();
       raf = requestAnimationFrame(loop);
     };
     s.until = performance.now() + 2500;
@@ -226,6 +294,30 @@ export default function SenseiBot() {
     }, 22000);
     return () => clearInterval(iv);
   }, []);
+
+  // ---- 精灵状态机：mood / idleAct / walking / dragging 决定播哪套帧 ----
+  useEffect(() => {
+    if (dragging) { setSprite("drag"); return; }
+    if (mood) {
+      const k = mood.kind;
+      if (k === "panic") setSprite("drag");
+      else if (k === "greet") setSprite("wave");
+      else if (k === "curious" || k === "sad") setSprite("surprised");
+      else if (k === "happy" || k === "speak") setSprite("happy");
+      else setSprite("idle"); // thinking / listen / relieved
+      return;
+    }
+    if (walking) { setSprite("walk"); return; }
+    if (idleAct) {
+      const t = idleAct.type;
+      if (t === "sleep") setSprite("sleep");
+      else if (t === "wave") setSprite("wave");
+      else if (t === "study") setSprite("sit");
+      else setSprite("idle");
+      return;
+    }
+    setSprite("idle");
+  }, [mood, idleAct, walking, dragging]);
 
   useEffect(() => {
     if (!open) return;
@@ -425,7 +517,7 @@ export default function SenseiBot() {
             title="Sakura-chan: 点我聊天，拖我玩 🌸"
             aria-label="Sakura-chan"
           >
-            <img src={mood?.kind === "panic" ? avatar : idleAct?.img || avatar} alt="Sakura-chan" />
+            <canvas ref={canvasRef} className="pet-canvas" />
             {idleAct?.type === "sleep" && !mood && <span className="zzz">💤</span>}
             {mood?.kind === "thinking" && <span className="mood-badge">💭</span>}
             {mood?.kind === "listen" && <span className="mood-badge">👂</span>}
