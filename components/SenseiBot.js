@@ -2,14 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "./Shell";
 
-const IDLE_MS = 20000;
 const IDLE_ACTS = [
-  { type: "sleep", img: "/outfits/sleep.png", text: "Zzz… 好困…", cls: "idle-sleep" },
+  { type: "sleep", img: "/outfits/sleep2.png", text: "Zzz… 好困…", cls: "idle-sleep" },
   { type: "snack", text: "偷吃一颗糖~ 🍡", cls: "idle-squish" },
   { type: "dance", text: "来跳个舞！💃", cls: "idle-dance" },
   { type: "wave", text: "主人还在吗？👋", cls: "idle-wave" },
   { type: "study", text: "我先复习一下…📖", cls: "idle-bob" },
-  { type: "peck", img: "/outfits/kiss.png", text: "mua~ 💋", cls: "idle-squish" },
+  { type: "peck", img: "/outfits/kiss2.png", text: "mua~ 💋", cls: "idle-squish" },
   { type: "stretch", text: "伸个懒腰~ 🙆", cls: "idle-stretch" },
 ];
 const pickIdle = () => IDLE_ACTS[Math.floor(Math.random() * IDLE_ACTS.length)];
@@ -28,35 +27,62 @@ export default function SenseiBot() {
   const [err, setErr] = useState("");
   const [idleAct, setIdleAct] = useState(null);
   const [woke, setWoke] = useState(false);
-  const idleTimer = useRef(null);
-  const idleCycle = useRef(null);
-  const isIdle = useRef(false);
+  const [walking, setWalking] = useState(false);
+  const petRef = useRef(null);
+  const flipRef = useRef(null);
+  const pet = useRef({ x: 0, y: 0, tx: 0, ty: 0, mode: "idle", until: 0, face: 1 });
+  const openRef = useRef(open);
+  useEffect(() => { openRef.current = open; }, [open ]);
 
-  // idle mascot: when the user is away for a while, Sakura-chan acts cute on her own
+  // wandering desktop-pet: Sakura-chan strolls around on her own, pauses to act cute
   useEffect(() => {
-    const goIdle = () => {
-      isIdle.current = true;
-      setIdleAct(pickIdle());
-      idleCycle.current = setInterval(() => setIdleAct(pickIdle()), 9000);
+    const s = pet.current;
+    const park = () => {
+      s.x = Math.max(20, window.innerWidth - 130);
+      s.y = Math.max(90, window.innerHeight - 280);
     };
-    const poke = () => {
-      if (isIdle.current) {
-        isIdle.current = false;
-        setIdleAct(null);
-        setWoke(true);
-        setTimeout(() => setWoke(false), 2200);
+    park();
+    let raf;
+    let last = performance.now();
+    const SPEED = 60;
+    const loop = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (!openRef.current) {
+        if (s.mode === "walk") {
+          const dx = s.tx - s.x, dy = s.ty - s.y;
+          const d = Math.hypot(dx, dy);
+          if (d < 5) {
+            s.mode = "idle";
+            s.until = now + 5000 + Math.random() * 8000;
+            setIdleAct(pickIdle());
+            setWalking(false);
+          } else {
+            s.x += (dx / d) * SPEED * dt;
+            s.y += (dy / d) * SPEED * dt;
+            const f = dx >= 0 ? 1 : -1;
+            if (f !== s.face) {
+              s.face = f;
+              if (flipRef.current) flipRef.current.style.transform = `scaleX(${f})`;
+            }
+          }
+        } else if (now >= s.until) {
+          s.tx = 20 + Math.random() * Math.max(40, window.innerWidth - 150);
+          s.ty = 90 + Math.random() * Math.max(40, window.innerHeight - 300);
+          s.mode = "walk";
+          setIdleAct(null);
+          setWalking(true);
+        }
       }
-      clearInterval(idleCycle.current);
-      clearTimeout(idleTimer.current);
-      idleTimer.current = setTimeout(goIdle, IDLE_MS);
+      if (petRef.current) petRef.current.style.transform = `translate(${s.x}px, ${s.y}px)`;
+      raf = requestAnimationFrame(loop);
     };
-    const evts = ["pointermove", "pointerdown", "keydown", "scroll", "touchstart"];
-    evts.forEach((e) => window.addEventListener(e, poke, { passive: true }));
-    idleTimer.current = setTimeout(goIdle, IDLE_MS);
+    s.until = performance.now() + 2500;
+    raf = requestAnimationFrame(loop);
+    window.addEventListener("resize", park);
     return () => {
-      evts.forEach((e) => window.removeEventListener(e, poke));
-      clearInterval(idleCycle.current);
-      clearTimeout(idleTimer.current);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", park);
     };
   }, []);
 
@@ -74,7 +100,7 @@ export default function SenseiBot() {
     }
   }, [open, tab]);
 
-  const avatar = rewards?.outfits?.find((o) => o.id === rewards.active)?.file || "/sensei-chan.png";
+  const avatar = rewards?.outfits?.find((o) => o.id === rewards.active)?.file || "/sensei2.png";
 
   async function saveNote() {
     if (!noteText.trim() || busy) return;
@@ -135,13 +161,20 @@ export default function SenseiBot() {
 
   return (
     <>
-      <button className={`sensei-fab${idleAct ? ` ${idleAct.cls}` : ""}${woke ? " idle-woke" : ""}`} onClick={() => setOpen((o) => !o)} title="Sakura-chan: 笔记 · 翻译 · 换装 🌸" aria-label="Open Sakura-chan">
-        <img src={idleAct?.img || avatar} alt="Sakura-chan" />
-        {idleAct?.type === "sleep" && <span className="zzz">💤</span>}
-      </button>
-      {(idleAct || woke) && !open && (
-        <div className="sensei-bubble">{woke ? "主人回来了！✨" : idleAct.text}</div>
-      )}
+      <div ref={petRef} className="pet-wander">
+        <div ref={flipRef} className="pet-flip">
+          <button
+            className={`pet-body${idleAct ? ` ${idleAct.cls}` : ""}${walking ? " walking" : ""}${woke ? " idle-woke" : ""}`}
+            onClick={() => { setOpen((o) => !o); setWoke(true); setTimeout(() => setWoke(false), 600); }}
+            title="Sakura-chan: 笔记 · 翻译 · 换装 🌸"
+            aria-label="Open Sakura-chan"
+          >
+            <img src={idleAct?.img || avatar} alt="Sakura-chan" />
+            {idleAct?.type === "sleep" && <span className="zzz">💤</span>}
+          </button>
+          {idleAct && !open && <div className="pet-bubble">{idleAct.text}</div>}
+        </div>
+      </div>
       {open && (
         <div className="sensei-panel">
           <div className="sensei-head">
@@ -222,7 +255,7 @@ export default function SenseiBot() {
                 )}
                 {rewards !== null && (
                   <div className="kiss-card">
-                    <img src="/outfits/kiss.png" alt="亲亲" />
+                    <img src="/outfits/kiss2.png" alt="亲亲" />
                     <div>
                       <b>😘 老师的亲亲</b>
                       <small className="muted" style={{ display: "block" }}>
@@ -276,7 +309,7 @@ export default function SenseiBot() {
       {kissing && (
         <div className="kiss-overlay" onClick={() => setKissing(false)}>
           <div className="kiss-pop">
-            <img src="/outfits/kiss.png" alt="mua~" />
+            <img src="/outfits/kiss2.png" alt="mua~" />
             <div className="kiss-text">mua~ 💋</div>
             <div className="kiss-sub">Sakura-chan 奖励你答对题目！继续加油哦~</div>
             {["💖", "💕", "🌸", "💗", "✨", "💘"].map((h, i) => (

@@ -156,47 +156,49 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 .hero h2 { font-size: 26px; margin: 0 0 6px; }
 .hero .mascot { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-soft); box-shadow: 0 4px 16px rgba(236, 107, 160, 0.25); margin-bottom: 8px; }
 
-/* floating sensei-chan bot */
-.sensei-fab {
-  position: fixed; right: 16px; bottom: 96px; z-index: 40;
-  width: 64px; height: 64px; border-radius: 50%; border: 3px solid #fff;
-  padding: 0; cursor: pointer; background: var(--accent-soft);
-  box-shadow: 0 6px 20px rgba(236, 107, 160, 0.45);
-  animation: fab-bob 3s ease-in-out infinite;
+/* wandering desktop-pet */
+.pet-wander { position: fixed; left: 0; top: 0; z-index: 40; will-change: transform; }
+.pet-flip { transition: transform .25s ease; }
+.pet-body {
+  position: relative; background: none; border: 0; padding: 0; cursor: pointer;
+  animation: pet-bob 3s ease-in-out infinite;
+  filter: drop-shadow(0 8px 16px rgba(236, 107, 160, 0.35));
 }
-.sensei-fab img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
-.sensei-fab:active { transform: scale(.92); }
-@keyframes fab-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.pet-body img { height: 104px; width: auto; display: block; }
+.pet-body:active { transform: scale(.94); }
+@keyframes pet-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+.pet-body.walking img { animation: pet-step .45s ease-in-out infinite; }
+@keyframes pet-step { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
 
-/* idle mascot speech bubble */
-.sensei-bubble {
-  position: fixed; right: 92px; bottom: 108px; z-index: 40;
+/* pet speech bubble */
+.pet-bubble {
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
   background: #fff; color: var(--ink); font-size: 13px; font-weight: 600;
   padding: 8px 12px; border-radius: 16px; border: 2px solid var(--accent);
   box-shadow: 0 6px 18px rgba(236, 107, 160, 0.35);
   animation: panel-pop .25s ease-out; white-space: nowrap; pointer-events: none;
 }
-.sensei-bubble::after {
-  content: ""; position: absolute; right: -8px; bottom: 14px;
-  border: 8px solid transparent; border-left-color: var(--accent); border-right: 0;
+.pet-bubble::after {
+  content: ""; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+  border: 8px solid transparent; border-top-color: var(--accent); border-bottom: 0;
 }
 
-/* idle animations */
-.sensei-fab.idle-sleep { animation: idle-sleep 3s ease-in-out infinite; }
+/* pet idle animations */
+.pet-body.idle-sleep { animation: idle-sleep 3s ease-in-out infinite; }
 @keyframes idle-sleep { 0%, 100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-8deg) translateY(4px); } }
-.sensei-fab.idle-sleep .zzz { position: absolute; top: -14px; right: -6px; font-size: 22px; animation: zzz-float 2.4s ease-in infinite; }
+.pet-body .zzz { position: absolute; top: -6px; right: 8px; font-size: 22px; animation: zzz-float 2.4s ease-in infinite; }
 @keyframes zzz-float { 0% { transform: translateY(6px) scale(.7); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-18px) scale(1.1); opacity: 0; } }
-.sensei-fab.idle-dance { animation: idle-dance 1.2s ease-in-out infinite; }
+.pet-body.idle-dance { animation: idle-dance 1.2s ease-in-out infinite; }
 @keyframes idle-dance { 0%, 100% { transform: rotate(-14deg) translateY(0); } 50% { transform: rotate(14deg) translateY(-10px); } }
-.sensei-fab.idle-wave { animation: idle-wave 1.6s ease-in-out infinite; }
+.pet-body.idle-wave { animation: idle-wave 1.6s ease-in-out infinite; }
 @keyframes idle-wave { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-10px); } }
-.sensei-fab.idle-squish { animation: idle-squish 1.4s ease-in-out infinite; }
+.pet-body.idle-squish { animation: idle-squish 1.4s ease-in-out infinite; }
 @keyframes idle-squish { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.15, .82); } 60% { transform: scale(.9, 1.1); } }
-.sensei-fab.idle-bob { animation: idle-bob 2s ease-in-out infinite; }
+.pet-body.idle-bob { animation: idle-bob 2s ease-in-out infinite; }
 @keyframes idle-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-.sensei-fab.idle-stretch { animation: idle-stretch 2.6s ease-in-out infinite; }
+.pet-body.idle-stretch { animation: idle-stretch 2.6s ease-in-out infinite; }
 @keyframes idle-stretch { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.92, 1.18); } }
-.sensei-fab.idle-woke { animation: idle-woke .55s ease-out; }
+.pet-body.idle-woke { animation: idle-woke .55s ease-out; }
 @keyframes idle-woke { 0% { transform: scale(.7); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
 .sensei-panel {
   position: fixed; right: 12px; bottom: 172px; z-index: 40;
