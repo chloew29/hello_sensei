@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import SenseiBot from "./SenseiBot";
 
 const Ctx = createContext(null);
 export const useMe = () => useContext(Ctx);
@@ -67,6 +68,7 @@ export default function Shell({ title, back, children }) {
         {me === null && <Login onDone={load} />}
         {me && <Ctx.Provider value={me}>{children}</Ctx.Provider>}
       </main>
+      {me && <SenseiBot />}
     </>
   );
 }
@@ -103,6 +105,7 @@ function Login({ onDone }) {
   return (
     <form onSubmit={submit} style={{ maxWidth: 400, margin: "0 auto" }}>
       <div className="hero">
+        <img className="mascot" src="/sensei-chan.png" alt="Sakura-chan" />
         <h2>Konnichiwa! 🌸</h2>
         <p className="muted">I am <b>Sensei</b>, your personal tutor. Learn any course from zero, together. Ganbatte!</p>
       </div>
