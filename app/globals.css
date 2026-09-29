@@ -167,6 +167,37 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 .sensei-fab img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
 .sensei-fab:active { transform: scale(.92); }
 @keyframes fab-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+/* idle mascot speech bubble */
+.sensei-bubble {
+  position: fixed; right: 92px; bottom: 108px; z-index: 40;
+  background: #fff; color: var(--ink); font-size: 13px; font-weight: 600;
+  padding: 8px 12px; border-radius: 16px; border: 2px solid var(--accent);
+  box-shadow: 0 6px 18px rgba(236, 107, 160, 0.35);
+  animation: panel-pop .25s ease-out; white-space: nowrap; pointer-events: none;
+}
+.sensei-bubble::after {
+  content: ""; position: absolute; right: -8px; bottom: 14px;
+  border: 8px solid transparent; border-left-color: var(--accent); border-right: 0;
+}
+
+/* idle animations */
+.sensei-fab.idle-sleep { animation: idle-sleep 3s ease-in-out infinite; }
+@keyframes idle-sleep { 0%, 100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-8deg) translateY(4px); } }
+.sensei-fab.idle-sleep .zzz { position: absolute; top: -14px; right: -6px; font-size: 22px; animation: zzz-float 2.4s ease-in infinite; }
+@keyframes zzz-float { 0% { transform: translateY(6px) scale(.7); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-18px) scale(1.1); opacity: 0; } }
+.sensei-fab.idle-dance { animation: idle-dance 1.2s ease-in-out infinite; }
+@keyframes idle-dance { 0%, 100% { transform: rotate(-14deg) translateY(0); } 50% { transform: rotate(14deg) translateY(-10px); } }
+.sensei-fab.idle-wave { animation: idle-wave 1.6s ease-in-out infinite; }
+@keyframes idle-wave { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-10px); } }
+.sensei-fab.idle-squish { animation: idle-squish 1.4s ease-in-out infinite; }
+@keyframes idle-squish { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.15, .82); } 60% { transform: scale(.9, 1.1); } }
+.sensei-fab.idle-bob { animation: idle-bob 2s ease-in-out infinite; }
+@keyframes idle-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.sensei-fab.idle-stretch { animation: idle-stretch 2.6s ease-in-out infinite; }
+@keyframes idle-stretch { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.92, 1.18); } }
+.sensei-fab.idle-woke { animation: idle-woke .55s ease-out; }
+@keyframes idle-woke { 0% { transform: scale(.7); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
 .sensei-panel {
   position: fixed; right: 12px; bottom: 172px; z-index: 40;
   width: min(340px, calc(100vw - 24px)); max-height: min(480px, 62vh);

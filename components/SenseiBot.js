@@ -1,6 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "./Shell";
+
+const IDLE_MS = 20000;
+const IDLE_ACTS = [
+  { type: "sleep", img: "/outfits/sleep.png", text: "Zzz… 好困…", cls: "idle-sleep" },
+  { type: "snack", text: "偷吃一颗糖~ 🍡", cls: "idle-squish" },
+  { type: "dance", text: "来跳个舞！💃", cls: "idle-dance" },
+  { type: "wave", text: "主人还在吗？👋", cls: "idle-wave" },
+  { type: "study", text: "我先复习一下…📖", cls: "idle-bob" },
+  { type: "peck", img: "/outfits/kiss.png", text: "mua~ 💋", cls: "idle-squish" },
+  { type: "stretch", text: "伸个懒腰~ 🙆", cls: "idle-stretch" },
+];
+const pickIdle = () => IDLE_ACTS[Math.floor(Math.random() * IDLE_ACTS.length)];
 
 export default function SenseiBot() {
   const [open, setOpen] = useState(false);
@@ -14,6 +26,39 @@ export default function SenseiBot() {
   const [kissing, setKissing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [idleAct, setIdleAct] = useState(null);
+  const [woke, setWoke] = useState(false);
+  const idleTimer = useRef(null);
+  const idleCycle = useRef(null);
+  const isIdle = useRef(false);
+
+  // idle mascot: when the user is away for a while, Sakura-chan acts cute on her own
+  useEffect(() => {
+    const goIdle = () => {
+      isIdle.current = true;
+      setIdleAct(pickIdle());
+      idleCycle.current = setInterval(() => setIdleAct(pickIdle()), 9000);
+    };
+    const poke = () => {
+      if (isIdle.current) {
+        isIdle.current = false;
+        setIdleAct(null);
+        setWoke(true);
+        setTimeout(() => setWoke(false), 2200);
+      }
+      clearInterval(idleCycle.current);
+      clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(goIdle, IDLE_MS);
+    };
+    const evts = ["pointermove", "pointerdown", "keydown", "scroll", "touchstart"];
+    evts.forEach((e) => window.addEventListener(e, poke, { passive: true }));
+    idleTimer.current = setTimeout(goIdle, IDLE_MS);
+    return () => {
+      evts.forEach((e) => window.removeEventListener(e, poke));
+      clearInterval(idleCycle.current);
+      clearTimeout(idleTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -90,9 +135,13 @@ export default function SenseiBot() {
 
   return (
     <>
-      <button className="sensei-fab" onClick={() => setOpen((o) => !o)} title="Sakura-chan: 笔记 · 翻译 · 换装 🌸" aria-label="Open Sakura-chan">
-        <img src={avatar} alt="Sakura-chan" />
+      <button className={`sensei-fab${idleAct ? ` ${idleAct.cls}` : ""}${woke ? " idle-woke" : ""}`} onClick={() => setOpen((o) => !o)} title="Sakura-chan: 笔记 · 翻译 · 换装 🌸" aria-label="Open Sakura-chan">
+        <img src={idleAct?.img || avatar} alt="Sakura-chan" />
+        {idleAct?.type === "sleep" && <span className="zzz">💤</span>}
       </button>
+      {(idleAct || woke) && !open && (
+        <div className="sensei-bubble">{woke ? "主人回来了！✨" : idleAct.text}</div>
+      )}
       {open && (
         <div className="sensei-panel">
           <div className="sensei-head">
