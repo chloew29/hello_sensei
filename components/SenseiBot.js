@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "./Shell";
 
 const IDLE_ACTS = [
-  { type: "sleep", img: "/outfits/sleep2.png", text: "Zzz… 好困…", cls: "idle-sleep" },
+  { type: "sleep", img: "/teacher-anime-sleep.png", text: "Zzz… 好困…", cls: "idle-sleep" },
   { type: "snack", text: "偷吃一颗糖~ 🍡", cls: "idle-squish" },
   { type: "dance", text: "来跳个舞！💃", cls: "idle-dance" },
   { type: "wave", text: "主人还在吗？👋", cls: "idle-wave" },
   { type: "study", text: "我先复习一下…📖", cls: "idle-bob" },
-  { type: "peck", img: "/outfits/kiss2.png", text: "mua~ 💋", cls: "idle-squish" },
+  { type: "peck", text: "mua~ 💋", cls: "idle-squish" },
   { type: "stretch", text: "伸个懒腰~ 🙆", cls: "idle-stretch" },
 ];
 const pickIdle = () => IDLE_ACTS[Math.floor(Math.random() * IDLE_ACTS.length)];
@@ -100,7 +100,7 @@ export default function SenseiBot() {
     }
   }, [open, tab]);
 
-  const avatar = rewards?.outfits?.find((o) => o.id === rewards.active)?.file || "/sensei2.png";
+  const avatar = rewards?.outfits?.find((o) => o.id === rewards.active)?.file || "/teacher-anime.png";
 
   async function saveNote() {
     if (!noteText.trim() || busy) return;
@@ -255,7 +255,7 @@ export default function SenseiBot() {
                 )}
                 {rewards !== null && (
                   <div className="kiss-card">
-                    <img src="/outfits/kiss2.png" alt="亲亲" />
+                    <img src="/teacher-anime.png" alt="亲亲" />
                     <div>
                       <b>😘 老师的亲亲</b>
                       <small className="muted" style={{ display: "block" }}>
@@ -309,7 +309,7 @@ export default function SenseiBot() {
       {kissing && (
         <div className="kiss-overlay" onClick={() => setKissing(false)}>
           <div className="kiss-pop">
-            <img src="/outfits/kiss2.png" alt="mua~" />
+            <img src="/teacher-anime.png" alt="mua~" />
             <div className="kiss-text">mua~ 💋</div>
             <div className="kiss-sub">Sakura-chan 奖励你答对题目！继续加油哦~</div>
             {["💖", "💕", "🌸", "💗", "✨", "💘"].map((h, i) => (
