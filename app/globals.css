@@ -200,6 +200,25 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 @keyframes idle-stretch { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.92, 1.18); } }
 .pet-body.idle-woke { animation: idle-woke .55s ease-out; }
 @keyframes idle-woke { 0% { transform: scale(.7); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+/* ---- 自然互动状态 ---- */
+.pet-body { touch-action: none; }
+.pet-body.idle-panic { animation: idle-panic .45s ease-in-out infinite; }
+@keyframes idle-panic { 0%, 100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-9px) rotate(-7deg); } 75% { transform: translateX(9px) rotate(7deg); } }
+.pet-body.idle-think { animation: idle-think 2.2s ease-in-out infinite; }
+@keyframes idle-think { 0%, 100% { transform: rotate(0) translateY(0); } 50% { transform: rotate(9deg) translateY(-7px); } }
+.pet-body.idle-listen { animation: idle-listen 1.6s ease-in-out infinite; }
+@keyframes idle-listen { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.pet-body.idle-look { animation: idle-look 1s ease-in-out 2; }
+@keyframes idle-look { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(16px); } }
+.pet-body .mood-badge { position: absolute; top: -8px; right: 4px; font-size: 20px; animation: zzz-float 2s ease-in infinite; }
+/* 樱花花瓣粒子 */
+.petal-layer { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+.petal { position: absolute; animation-name: petal-fall; animation-timing-function: linear; animation-fill-mode: forwards; }
+@keyframes petal-fall {
+  0% { transform: translate(0, -12px) rotate(0deg); opacity: 0; }
+  12% { opacity: 1; }
+  100% { transform: translate(var(--dx, 40px), 150px) rotate(320deg); opacity: 0; }
+}
 .sensei-panel {
   position: fixed; right: 12px; bottom: 172px; z-index: 40;
   width: min(340px, calc(100vw - 24px)); max-height: min(480px, 62vh);

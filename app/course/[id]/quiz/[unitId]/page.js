@@ -39,6 +39,7 @@ function Quiz() {
         }),
       });
       setResult(r);
+      if (r.earned > 0) window.dispatchEvent(new CustomEvent("sensei-celebrate"));
     } catch (e) {
       setErr(e.message);
     }
