@@ -167,8 +167,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 .pet-body img { height: clamp(170px, 32vh, 300px); width: auto; display: block; }
 .pet-body:active { transform: scale(.94); }
 @keyframes pet-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-.pet-body.walking img { animation: pet-step .45s ease-in-out infinite; }
-@keyframes pet-step { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+.pet-body.walking img { animation: pet-step .4s ease-in-out infinite; }
+@keyframes pet-step { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-11px); } }
 
 /* pet speech bubble */
 .pet-bubble {

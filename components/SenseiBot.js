@@ -97,7 +97,7 @@ export default function SenseiBot() {
     park();
     let raf;
     let last = performance.now();
-    const SPEED = 60;
+    const SPEED = 115;
     const loop = (now) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
