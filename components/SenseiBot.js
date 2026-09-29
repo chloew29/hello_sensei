@@ -48,16 +48,16 @@ export default function SenseiBot() {
   const [petals, setPetals] = useState([]);
   const petRef = useRef(null);
   const flipRef = useRef(null);
-  const pet = useRef({ x: 0, y: 0, tx: 0, ty: 0, mode: "idle", until: 0, holdUntil: 0, face: 1 });
+  const pet = useRef({ x: 0, y: 0, tx: 0, ty: 0, mode: "idle", until: 0, holdUntil: 0 });
   const moodTimer = useRef(null);
   const petalId = useRef(0);
   const dragRef = useRef(null);
   const tiltRef = useRef(0); // 朝鼠标方向的身体倾斜（眼神互动）
   const curiousCd = useRef(0);
   const burstRef = useRef(null);
-  const applyFlipRef = useRef(null);
-  applyFlipRef.current = () => {
-    if (flipRef.current) flipRef.current.style.transform = `scaleX(${pet.current.face}) rotate(${tiltRef.current}deg)`;
+  const applyTiltRef = useRef(null);
+  applyTiltRef.current = () => {
+    if (flipRef.current) flipRef.current.style.transform = `rotate(${tiltRef.current}deg)`;
   };
   const openRef = useRef(open);
   useEffect(() => { openRef.current = open; }, [open ]);
@@ -107,25 +107,39 @@ export default function SenseiBot() {
           const d = Math.hypot(dx, dy);
           if (d < 5) {
             s.mode = "idle";
-            s.until = now + 5000 + Math.random() * 8000;
+            s.until = now + 4000 + Math.random() * 5000;
             setIdleAct(pickIdle());
             setWalking(false);
+            tiltRef.current = 0;
+            applyTiltRef.current?.();
           } else {
             s.x += (dx / d) * SPEED * dt;
             s.y += (dy / d) * SPEED * dt;
-            const f = dx >= 0 ? 1 : -1;
-            if (f !== s.face) {
-              s.face = f;
-              tiltRef.current = 0;
-              applyFlipRef.current?.();
+            // 身体朝移动方向微微倾斜，不再镜像翻转
+            const lean = clamp(dx / 60, -4, 4);
+            if (Math.abs(lean - tiltRef.current) > 0.3) {
+              tiltRef.current = lean;
+              applyTiltRef.current?.();
             }
           }
         } else if (now >= s.until) {
-          s.tx = 20 + Math.random() * Math.max(40, window.innerWidth - 150);
-          s.ty = 90 + Math.random() * Math.max(40, window.innerHeight - 300);
-          s.mode = "walk";
-          setIdleAct(null);
-          setWalking(true);
+          if (Math.random() < 0.45) {
+            // 歇着：换个小动作继续待着，不一定非要走
+            setIdleAct(pickIdle());
+            s.until = now + 4000 + Math.random() * 5000;
+          } else {
+            // 有时只挪一小步，有时散步到远处
+            const near = Math.random() < 0.35;
+            s.tx = near
+              ? clamp(s.x + (Math.random() - 0.5) * 320, 20, Math.max(40, window.innerWidth - 160))
+              : 20 + Math.random() * Math.max(40, window.innerWidth - 150);
+            s.ty = near
+              ? clamp(s.y + (Math.random() - 0.5) * 220, 90, Math.max(90, window.innerHeight - 300))
+              : 90 + Math.random() * Math.max(40, window.innerHeight - 300);
+            s.mode = "walk";
+            setIdleAct(null);
+            setWalking(true);
+          }
         }
       }
       if (petRef.current) petRef.current.style.transform = `translate(${s.x}px, ${s.y}px)`;
@@ -185,17 +199,17 @@ export default function SenseiBot() {
     const onMouse = (e) => {
       const s = pet.current;
       if (s.mode !== "idle" || openRef.current || dragRef.current) {
-        if (tiltRef.current !== 0) { tiltRef.current = 0; applyFlipRef.current?.(); }
+        if (tiltRef.current !== 0) { tiltRef.current = 0; applyTiltRef.current?.(); }
         return;
       }
       const cx = s.x + 80, cy = s.y + 120; // 桌宠大致中心
       const dx = e.clientX - cx;
       const dy = e.clientY - cy;
       const dist = Math.hypot(dx, dy);
-      const target = dist < 900 ? clamp(dx / 45, -7, 7) : 0; // 太远就不看了
+      const target = dist < 900 ? clamp(dx / 60, -4, 4) : 0; // 太远就不看了
       if (Math.abs(target - tiltRef.current) > 0.5) {
         tiltRef.current = target;
-        applyFlipRef.current?.();
+        applyTiltRef.current?.();
       }
     };
     window.addEventListener("mousemove", onMouse);
@@ -294,6 +308,8 @@ export default function SenseiBot() {
       s.mode = "idle";
       s.until = performance.now() + 4000;
       s.holdUntil = performance.now() + 6000; // 放下后歇一会儿
+      tiltRef.current = 0;
+      applyTiltRef.current?.();
       express("relieved", "呼…得救了~ 谢谢主人💗", "idle-woke", 3500);
       burstPetals(6);
     } else {
@@ -400,7 +416,7 @@ export default function SenseiBot() {
       <div ref={petRef} className="pet-wander">
         <div ref={flipRef} className="pet-flip">
           <button
-            className={`pet-body${moodCls ? ` ${moodCls}` : actCls ? ` ${actCls}` : ""}${walking ? " walking" : ""}${woke ? " idle-woke" : ""}`}
+            className={`pet-body${moodCls ? ` ${moodCls}` : actCls ? ` ${actCls}` : walking || woke ? "" : " pet-calm"}${walking ? " walking" : ""}${woke ? " idle-woke" : ""}`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
