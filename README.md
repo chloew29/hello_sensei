@@ -19,7 +19,7 @@ A private AI tutor for any course. Two (or more) people share one app, each with
 4. In **Settings > Environment Variables**, add:
    - `AI_API_KEY`: free key from https://aistudio.google.com/apikey (no card required)
    - `APP_PASSCODE`: any passcode you both use to sign in
-   - `AI_MODEL` (optional): defaults to `gemini-2.5-flash`
+   - `AI_MODEL` (optional): defaults to `gemini-3.8-flash`
 5. **Deployments > Redeploy.** Open the URL on both phones, sign in with your names and the passcode, and add it to the home screen.
 
 ## Run locally
