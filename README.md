@@ -3,7 +3,7 @@
 A private AI tutor for any course. Two (or more) people share one app, each with their own progress.
 
 - Add a course: syllabus, slides, notes, photos of the board. Pick goal, deadline, starting level (including "Not sure").
-- Claude builds a unit plan from zero, ordered by prerequisites.
+- Gemini (free tier) powers the tutor: plan from zero, ordered by prerequisites.
 - Diagnostic quiz finds the starting point.
 - Tutor chat per unit, grounded in your materials, with one-tap methods: explain simpler, example, analogy, memory trick, quiz me, teach-back, diagram, compare, exam tips, summary sheet.
 - Unit quizzes (80% marks a unit done). Missed questions go into spaced review.
@@ -17,9 +17,9 @@ A private AI tutor for any course. Two (or more) people share one app, each with
 2. Go to vercel.com, sign in with GitHub, **Add New > Project**, import the repo.
 3. In the project, open **Storage > Create Database > Upstash for Redis** (free tier) and connect it. This sets the database env vars for you.
 4. In **Settings > Environment Variables**, add:
-   - `ANTHROPIC_API_KEY`: from console.anthropic.com
+   - `AI_API_KEY`: free key from https://aistudio.google.com/apikey (no card required)
    - `APP_PASSCODE`: any passcode you both use to sign in
-   - `CLAUDE_MODEL` (optional): defaults to `claude-sonnet-4-6`
+   - `AI_MODEL` (optional): defaults to `gemini-2.5-flash`
 5. **Deployments > Redeploy.** Open the URL on both phones, sign in with your names and the passcode, and add it to the home screen.
 
 ## Run locally
@@ -34,8 +34,8 @@ Without Redis env vars, data is saved to `.data/db.json`. Set `MOCK_AI=1` and le
 ## Limits
 
 - 4 MB per file (Vercel upload limit). Split big PDFs or export fewer pages.
-- Scanned PDFs with no text layer: upload photos of the pages instead; those are transcribed by Claude.
-- Cost: roughly a few cents per study session with Sonnet. Set a monthly spend limit in the Anthropic console.
+- Scanned PDFs with no text layer: upload photos of the pages instead; those are transcribed by the AI.
+- Cost: $0 on the Gemini free tier (500 requests/day on Flash), which is plenty for two learners. To switch providers later, just change `AI_BASE_URL`, `AI_API_KEY` and `AI_MODEL` — any OpenAI-compatible endpoint works (DeepSeek, OpenRouter, OpenAI, a local model).
 - Dates use UTC, so "due today" flips at 5 pm Pacific.
 
 ## How it teaches (v2)
@@ -52,7 +52,7 @@ Without Redis env vars, data is saved to `.data/db.json`. Set `MOCK_AI=1` and le
 
 `npm run eval:compare` runs the old and new tutor on 20 scripted learners and prints a before/after table. See `eval/README.md`.
 
-Optional env: `CHECK_MODEL` (default `claude-haiku-4-5`) for grading, re-checks and the eval judge.
+Optional env: `AI_CHECK_MODEL` (default: same as `AI_MODEL`) for grading, re-checks and the eval judge.
 
 ## Where things are
 

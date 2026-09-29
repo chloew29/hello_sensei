@@ -1,6 +1,6 @@
 import { currentLearner, unauthorized, bad } from "@/lib/auth";
 import { getCourse, saveCourse, getChunks, today, addDays } from "@/lib/data";
-import { claudeJSON } from "@/lib/claude";
+import { aiJSON } from "@/lib/ai";
 import { extendPrompt } from "@/lib/prompts";
 
 export const maxDuration = 120;
@@ -23,7 +23,7 @@ export async function POST(req, { params }) {
 
   const { system, content, schema } = extendPrompt(course, text, label);
   try {
-    const out = await claudeJSON({
+    const out = await aiJSON({
       system,
       content,
       schema,

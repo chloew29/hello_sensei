@@ -2,7 +2,7 @@ import { currentLearner, unauthorized, bad } from "@/lib/auth";
 import { kvGet, kvSet } from "@/lib/store";
 import { COURSES_KEY, listCourses, saveCourse, saveChunks, getProgress, learnerSummary, newId, getLearners, today, addDays } from "@/lib/data";
 import { extractFile, chunkText } from "@/lib/materials";
-import { claudeJSON } from "@/lib/claude";
+import { aiJSON } from "@/lib/ai";
 import { planPrompt, GOALS, LEVELS, LANGS } from "@/lib/prompts";
 
 export const maxDuration = 120;
@@ -64,7 +64,7 @@ export async function POST(req) {
   const deadline = course.deadline || addDays(today(), 56);
   let plan;
   try {
-    plan = await claudeJSON({
+    plan = await aiJSON({
       system,
       content,
       schema,

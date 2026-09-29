@@ -1,7 +1,7 @@
 import { currentLearner, unauthorized, bad } from "@/lib/auth";
 import { getCourse, getChunks, getProgress, learnerSummary, today } from "@/lib/data";
 import { retrieve, formatExcerpts } from "@/lib/materials";
-import { claudeJSON } from "@/lib/claude";
+import { aiJSON } from "@/lib/ai";
 import { quizPrompt } from "@/lib/prompts";
 import { getKit } from "@/lib/kit";
 import { formatKit } from "@/lib/pedagogy";
@@ -35,7 +35,7 @@ export async function POST(req) {
     : "";
 
   try {
-    const out = await claudeJSON({
+    const out = await aiJSON({
       system,
       content: content + extra,
       schema,

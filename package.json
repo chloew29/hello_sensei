@@ -10,7 +10,6 @@
     "eval:compare": "node eval/run.js --compare"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.129.0",
     "@upstash/redis": "^1.39.0",
     "jszip": "^3.10.2",
     "mammoth": "^1.13.0",

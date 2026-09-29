@@ -3,12 +3,12 @@
 //   npm run eval                 run the current tutor (v2) on all scenarios
 //   npm run eval:compare         run the old prompt (v1) and v2, print a before/after table
 //   node eval/run.js --only python --concurrency 2
-// Needs ANTHROPIC_API_KEY. With MOCK_AI=1 and no key it runs with canned replies (plumbing test only).
+// Needs AI_API_KEY (default: a free Google AI Studio key). With MOCK_AI=1 and no key it runs with canned replies (plumbing test only).
 import fs from "fs";
 import path from "path";
 import { SCENARIOS } from "./scenarios.js";
 import { tutorTurn, emptyState } from "../lib/tutor.js";
-import { claudeJSON, claudeText, CHECK_MODEL, MODEL, MOCK } from "../lib/claude.js";
+import { aiJSON, aiText, CHECK_MODEL, MODEL, MOCK } from "../lib/ai.js";
 
 const args = process.argv.slice(2);
 const arg = (name, dflt) => {
@@ -23,7 +23,7 @@ const OUT = path.join(process.cwd(), "eval", "out");
 
 // ---------- judge: binary checks per tutor turn ----------
 async function judge(sc, studentMsg, reply, learnerHasCorrect) {
-  const out = await claudeJSON({
+  const out = await aiJSON({
     model: CHECK_MODEL,
     maxTokens: 600,
     toolName: "checks",
@@ -72,7 +72,7 @@ async function studentSays(sc, mode, history) {
     mode === "understood"
       ? `You now understand this correction: ${sc.misconception.correction} Answer the tutor's latest question correctly in your own words. If they asked the practice problem, the correct answer is: ${sc.correctAnswer}`
       : `You firmly believe: "${sc.misconception.name}". Answer the tutor's latest question in a way consistent with that belief. Do not suddenly understand. If the tutor asks you to explain, explain using your belief.`;
-  return claudeText({
+  return aiText({
     model: CHECK_MODEL,
     maxTokens: 200,
     system: `You role-play a beginner student in ${sc.course.name}. Reply in 1 to 2 short sentences, in ${sc.language}. ${belief}`,
@@ -202,8 +202,8 @@ async function pool(items, n, fn) {
 }
 
 async function main() {
-  if (!process.env.ANTHROPIC_API_KEY && !MOCK) {
-    console.error("Set ANTHROPIC_API_KEY (or MOCK_AI=1 for a plumbing test).");
+  if (!process.env.AI_API_KEY && !MOCK) {
+    console.error("Set AI_API_KEY (or MOCK_AI=1 for a plumbing test).");
     process.exit(1);
   }
   const scenarios = SCENARIOS.filter((s) => s.id.includes(ONLY));
