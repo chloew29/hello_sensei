@@ -1,0 +1,183 @@
+{
+ "steps": [
+  "[3s] onboarding welcome shown",
+  "[8s] PDF attached",
+  "[8s] passcode prompt seen: Enter the Study Buddy passcode",
+  "[24s] plan done: 10 lessons, 10 cards",
+  "[25s] home shown",
+  "[33s] first AI teaching message received",
+  "[35s] nudged tutor: Got it, please continue.",
+  "[43s] answered quiz \"What do we call the double-layer structu...\" -> WRONG (intentional)",
+  "[49s] answered quiz \"What is the two-layer structure of the c...\" -> CORRECT",
+  "[55s] answered quiz \"What main molecule forms the two-layered...\" -> CORRECT",
+  "[62s] lesson complete, stamp earned",
+  "[69s] next lesson started (lesson 2)",
+  "[71s] flashcards flip+rate ok; back text: What is the primary structure of the cell membrane?\nThe cell",
+  "[84s] add-notes: lessons 10 -> 12",
+  "[86s] persistence after reload: 12 lessons, 1 done",
+  "[86s] language switched to: 繁體中文",
+  "[86s] E2E COMPLETE"
+ ],
+ "errors": [
+  "CONSOLE: Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED",
+  "CONSOLE: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "CONSOLE: Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+ ],
+ "aiMessages": [
+  {
+   "say": "Konnichiwa, Tester-san! I am Hana-sensei, and my little calico kitten, Mikan, is curled up beside us, ready to learn too. Let's start from the very beginning.\n\nImagine a cell is like a cozy little room. Around every cell is a flexible outer barrier called the **cell membrane**. Think of it like the skin or the walls of that room—it holds the cell together and protects the inside from the outside w",
+   "hasQuiz": false,
+   "complete": false
+  },
+  {
+   "say": "Exactly—without that wall, everything inside would spill out!\n\nNow, what makes up this barrier? It's mostly built from special fats called **phospholipids**.\n\nInstead of just one sheet, these molecules form two layers that face each other. We call this a **bilayer**—just like *bicycle* means two wheels, *bilayer* means two layers. You can imagine it like two slices of bread making a sandwich aroun",
+   "hasQuiz": true,
+   "complete": false
+  },
+  {
+   "say": "Daijoubu (it's okay), Tester-san! It's an easy mix-up when we are starting out.\n\nWhile cells do have proteins, the main blanket wrapping the cell is made of fatty molecules called **phospholipids**. \n\nBecause there are two layers pressed together, we use the prefix **bi-** (just like *bi*cycle has two wheels). Putting those two words together gives us the name for this double layer.\n\nLet's try tha",
+   "hasQuiz": true,
+   "complete": false
+  },
+  {
+   "say": "Yatta! (You did it!) That is exactly right.\n\nSo, every living cell is wrapped in this special **phospholipid bilayer**. It acts like a flexible, protective skin, keeping the watery contents inside safe from the watery environment outside.\n\nMikan gives you a gentle paw of approval! Let's do one last check to make sure this foundational idea is crystal clear.",
+   "hasQuiz": true,
+   "complete": false
+  },
+  {
+   "say": "Subarashii! (Wonderful!) You have mastered our very first goal: the cell membrane is a protective barrier made of a **phospholipid bilayer**.\n\nMikan is purring happily right beside your notes. You are officially one step closer to passing your biology class!\n\nWhenever you are ready, we will dive into Lesson 2 to see the fascinating heads and tails of these phospholipids. Great work today!",
+   "hasQuiz": false,
+   "complete": true
+  }
+ ],
+ "quizzes": [
+  {
+   "question": "What do we call the double-layer structure formed by phospholipids in the cell membrane?",
+   "picked": 1,
+   "answer": 0,
+   "correct": false
+  },
+  {
+   "question": "What is the two-layer structure of the cell membrane called?",
+   "picked": 1,
+   "answer": 1,
+   "correct": true
+  },
+  {
+   "question": "What main molecule forms the two-layered foundation of the cell membrane?",
+   "picked": 0,
+   "answer": 0,
+   "correct": true
+  }
+ ],
+ "plan": {
+  "name": "Intro Biology: Cell Membranes",
+  "kanji": "膜",
+  "lessons": [
+   {
+    "title": "Introduction to Cell Membranes",
+    "goal": "Understand the basic phospholipid bilayer structure of the cell membrane.",
+    "stamp": "基"
+   },
+   {
+    "title": "Phospholipid Heads and Tails",
+    "goal": "Learn the difference between hydrophilic heads and hydrophobic tails.",
+    "stamp": "脂"
+   },
+   {
+    "title": "The Fluid Mosaic Model",
+    "goal": "Explain how floating proteins create the fluid mosaic structure.",
+    "stamp": "浮"
+   },
+   {
+    "title": "Integral Membrane Proteins",
+    "goal": "Identify how integral proteins span the membrane to serve as channels or carriers.",
+    "stamp": "貫"
+   },
+   {
+    "title": "Peripheral Membrane Proteins",
+    "goal": "Explore how peripheral proteins sit on membrane surfaces as enzymes or signals.",
+    "stamp": "表"
+   },
+   {
+    "title": "Carbohydrates and the Glycocalyx",
+    "goal": "Understand how carbohydrate chains attached to proteins enable cell recognition.",
+    "stamp": "糖"
+   },
+   {
+    "title": "Selective Permeability Basics",
+    "goal": "Define selective permeability and how membranes regulate crossing molecules.",
+    "stamp": "選"
+   },
+   {
+    "title": "Diffusion of Small Nonpolar Molecules",
+    "goal": "Learn how oxygen and carbon dioxide diffuse freely across the bilayer.",
+    "stamp": "気"
+   },
+   {
+    "title": "Transport of Ions and Polar Molecules",
+    "goal": "Understand why ions and large polar molecules require transport proteins.",
+    "stamp": "運"
+   },
+   {
+    "title": "Osmosis and Water Concentration",
+    "goal": "Explain how water diffuses across membranes from low to high solute concentration.",
+    "stamp": "水"
+   }
+  ],
+  "cards": [
+   {
+    "front": "What is the primary structure of the cell membrane?",
+    "back": "The cell membrane is arranged as a phospholipid bilayer."
+   },
+   {
+    "front": "What are the two main regions of a phospholipid?",
+    "back": "Each phospholipid has one hydrophilic head and two hydrophobic tails."
+   },
+   {
+    "front": "What does hydrophilic mean?",
+    "back": "Hydrophilic means water-loving."
+   },
+   {
+    "front": "What does hydrophobic mean?",
+    "back": "Hydrophobic means water-fearing."
+   },
+   {
+    "front": "Where do phospholipid heads face in water?",
+    "back": "The hydrophilic heads face outward toward the surrounding water."
+   },
+   {
+    "front": "Where do phospholipid tails point in water?",
+    "back": "The hydrophobic tails hide inside the bilayer, away from water."
+   },
+   {
+    "front": "Why is the membrane structure called a mosaic?",
+    "back": "It is called a mosaic because proteins float within the lipid bilayer like icebergs."
+   },
+   {
+    "front": "What role do proteins play in the fluid mosaic model?",
+    "back": "Proteins float inside the phospholipid bilayer."
+   },
+   {
+    "front": "How many tails does each membrane phospholipid have?",
+    "back": "Each phospholipid has two hydrophobic tails."
+   },
+   {
+    "front": "What is the name of the model describing membrane structure?",
+    "back": "It is called the fluid mosaic model."
+   }
+  ]
+ },
+ "timings": {
+  "plan_start": 8,
+  "plan_done": 24,
+  "first_ai_msg": 32,
+  "lesson1_done": 62,
+  "notes_done": 84
+ },
+ "persisted": {
+  "lessons": 12,
+  "doneCount": 1
+ },
+ "lang": "繁體中文"
+}

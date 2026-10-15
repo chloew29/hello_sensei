@@ -1,6 +1,4 @@
-node_modules
-.next
-.data
-.env*
-!.env.example
-eval/out
+.dev.vars
+.wrangler/
+node_modules/
+.DS_Store

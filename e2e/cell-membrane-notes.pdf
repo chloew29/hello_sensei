@@ -1,0 +1,51 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1036 >>
+stream
+BT /F1 14 Tf 50 740 Td 18 TL
+(Cell Membranes - Study Notes) Tj T*
+() Tj T*
+(1. The fluid mosaic model) Tj T*
+(The cell membrane is a phospholipid bilayer. Each phospholipid has a) Tj T*
+(hydrophilic \(water-loving\) head and two hydrophobic \(water-fearing\) tails.) Tj T*
+(In water, the tails hide inside while the heads face outward. Proteins float) Tj T*
+(in this bilayer like icebergs, which is why it is called a mosaic.) Tj T*
+() Tj T*
+(2. Membrane proteins) Tj T*
+(Integral proteins span the whole bilayer and act as channels or carriers.) Tj T*
+(Peripheral proteins sit on the surface and work as enzymes or signals.) Tj T*
+(Carbohydrate chains attached to proteins form the glycocalyx, used for) Tj T*
+(cell recognition.) Tj T*
+() Tj T*
+(3. Selective permeability) Tj T*
+(Small nonpolar molecules \(O2, CO2\) diffuse freely across. Ions and large) Tj T*
+(polar molecules need transport proteins. Osmosis is the diffusion of water) Tj T*
+(across a selectively permeable membrane, from low to high solute concentration.) Tj T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001329 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1399
+%%EOF

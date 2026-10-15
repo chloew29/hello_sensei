@@ -1,0 +1,6 @@
+Osmosis and active transport - extra notes
+
+Osmosis is passive: water moves down its concentration gradient, no energy needed.
+Active transport moves substances AGAINST the gradient and costs ATP energy.
+Example: the sodium-potassium pump moves 3 Na+ out and 2 K+ in per ATP.
+Endocytosis brings large particles in by engulfing them in vesicles.

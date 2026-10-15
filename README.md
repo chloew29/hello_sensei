@@ -1,64 +1,84 @@
-# Study Buddy
+# Study Buddy (hello_sensei)
 
-A private AI tutor for any course. Two (or more) people share one app, each with their own progress.
+Learn any course with Hana-sensei, an AI tutor. Installable web app (PWA) that runs free on Cloudflare Pages with the Gemini API free tier.
 
-- Add a course: syllabus, slides, notes, photos of the board. Pick goal, deadline, starting level (including "Not sure").
-- Gemini (free tier) powers the tutor: plan from zero, ordered by prerequisites.
-- Diagnostic quiz finds the starting point.
-- Tutor chat per unit, grounded in your materials, with one-tap methods: explain simpler, example, analogy, memory trick, quiz me, teach-back, diagram, compare, exam tips, summary sheet.
-- Unit quizzes (80% marks a unit done). Missed questions go into spaced review.
-- Each week, add new teacher materials. New topics are added to the plan.
-- Shared progress board: units done, last score, streak, shaky concepts.
-- Installs to the phone home screen (iPhone: Share > Add to Home Screen).
+## What works in v1
 
-## Deploy (about 15 minutes)
+- Onboarding: name, course, starting level, goal, minutes per day, optional PDF or photo. Gemini builds 8 to 12 lessons and 10 flashcards.
+- Sensei chat: Hana teaches one small idea at a time, gives multiple-choice quizzes, and stamps the lesson when you show you understand it.
+- Home: today's lesson, stamp book, shortcuts.
+- Flashcards: flip, Again / Good / Easy.
+- Add notes: upload more material to an existing course; Gemini adds the missing lessons and new cards.
+- Me: streak, stamps, minutes this week, tutor language (English / 繁體中文 / 日本語), backup and restore.
 
-1. Put this folder on GitHub (new private repo, upload the files).
-2. Go to vercel.com, sign in with GitHub, **Add New > Project**, import the repo.
-3. In the project, open **Storage > Create Database > Upstash for Redis** (free tier) and connect it. This sets the database env vars for you.
-4. In **Settings > Environment Variables**, add:
-   - `AI_API_KEY`: free key from https://aistudio.google.com/apikey (no card required)
-   - `APP_PASSCODE`: any passcode you both use to sign in
-   - `AI_MODEL` (optional): defaults to `gemini-3.8-flash`
-5. **Deployments > Redeploy.** Open the URL on both phones, sign in with your names and the passcode, and add it to the home screen.
+Progress is stored in the browser on each device (localStorage). There is no account or sync yet, so you and your friend each have your own progress. Use Me > Back up my data before switching phones.
 
-## Run locally
+## Project layout
 
 ```
-npm install
-cp .env.example .env.local   # fill in the key and passcode
-npm run dev
+public/               the app (plain HTML/CSS/JS, no build step)
+  index.html, styles.css, app.js, gemini.js, sw.js, manifest.webmanifest
+  assets/             Hana videos, kitten art
+functions/api/gemini.js   server proxy that holds the Gemini key
+wrangler.toml
 ```
-Without Redis env vars, data is saved to `.data/db.json`. Set `MOCK_AI=1` and leave the API key empty to click through the app without spending tokens.
 
-## Limits
+The browser only ever calls `/api/gemini`. The key lives in Cloudflare, never in the page.
 
-- 4 MB per file (Vercel upload limit). Split big PDFs or export fewer pages.
-- Scanned PDFs with no text layer: upload photos of the pages instead; those are transcribed by the AI.
-- Cost: $0 on the Gemini free tier (500 requests/day on Flash), which is plenty for two learners. To switch providers later, just change `AI_BASE_URL`, `AI_API_KEY` and `AI_MODEL` — any OpenAI-compatible endpoint works (DeepSeek, OpenRouter, OpenAI, a local model).
-- Dates use UTC, so "due today" flips at 5 pm Pacific.
+## 1. Get a Gemini key (free)
 
-## How it teaches (v2)
+Go to https://aistudio.google.com, sign in, then **Get API key > Create API key**. Copy it.
 
-- **Hidden answer key per unit**, generated from your materials, fact-checked by a second pass, and cached. It holds key points, common misconceptions, a worked example and practice answers. It regenerates when you add materials.
-- **Tutor rules**: guess first, then explain, then refute the tempting wrong idea; every reply ends with something you must answer; a 5-step hint ladder ("I'm stuck"); "Show answer" only after you've tried; never backs down from a correct correction just because you push back (an independent check on the small model decides).
-- **A hidden plan every turn** (was the answer right, which misconception, which strategy) drives the learner state and is logged for evaluation.
-- **Quizzes**: type your answer first, rate your confidence, then pick. Questions are double-checked by a second model and dropped if it disagrees.
-- **Learned vs mastered**: 80% makes a unit "learned". It becomes "mastered" only if you pass again 2 to 3 days later without help.
-- **Review**: every quiz question goes in, timed to your exam date. Confident mistakes come back the same day. An item clears after correct recall on 3 separate days.
-- **Mistake notebook (错题本)**: every miss, why it happened, and your own one-line fix.
+Free tier note: Google may use free-tier prompts and uploads to improve its products, and people may review them. Don't upload anything private. Your current limits are shown in AI Studio.
 
-## Tutor eval
+## 2. Run it locally
 
-`npm run eval:compare` runs the old and new tutor on 20 scripted learners and prints a before/after table. See `eval/README.md`.
+Requires Node 18+.
 
-Optional env: `AI_CHECK_MODEL` (default: same as `AI_MODEL`) for grading, re-checks and the eval judge.
+```bash
+cp .dev.vars.example .dev.vars      # then paste your key into .dev.vars
+npx wrangler pages dev
+```
 
-## Where things are
+Open the printed URL (usually http://localhost:8788).
 
-- `lib/pedagogy.js`: the tutor's teaching method and system prompt. Edit here to change how it teaches.
-- `lib/tutor.js`: turn engine (reveal gate, hint ladder, pushback re-check, hidden plan).
-- `lib/kit.js`: answer key generation and verification. `lib/grading.js`: typed-answer grading and quiz checks.
-- `lib/materials.js`: file reading (PDF, PowerPoint, Word, images) and retrieval.
-- `eval/`: scripted scenarios and the eval runner.
-- `app/api/*`: server routes. `app/course/*`: screens.
+## 3. Deploy (free)
+
+Option A, straight from your laptop:
+
+```bash
+npx wrangler login
+npx wrangler pages deploy        # first run asks for a project name, e.g. study-buddy
+```
+
+Then in the Cloudflare dashboard: **Workers & Pages > study-buddy > Settings > Variables and Secrets**, add
+
+| Name | Value |
+|---|---|
+| `GEMINI_API_KEY` | your key (type: Secret) |
+| `APP_PASSCODE` | any word you and your friend will share |
+| `GEMINI_MODEL` | optional, defaults to `gemini-flash-latest` |
+
+and run `npx wrangler pages deploy` once more so they take effect.
+
+Option B, from GitHub: push this folder to a repo, then **Workers & Pages > Create > Pages > Connect to Git**. Build command: none. Output directory: `public`. Add the same variables.
+
+## 4. Put it on your phone
+
+Open your `https://<project>.pages.dev` link.
+- iPhone (Safari): Share > Add to Home Screen.
+- Android (Chrome): menu > Install app.
+
+The first AI request asks for the passcode. Send your friend the link and the passcode.
+
+## Changing things
+
+- Different model: set `GEMINI_MODEL` (for example a specific Flash version from AI Studio).
+- Different AI provider later: only `functions/api/gemini.js` talks to Google. Swap its fetch for another provider and keep returning `{ text }` with JSON inside.
+- After editing files in `public/`, bump `VERSION` in `public/sw.js` so installed apps pick up the change.
+
+## Limits to know
+
+- Uploads must be under about 14 MB (Gemini inline limit). Split big PDFs.
+- If the free quota runs out, the app says so; try again later.
+- Hana's art and videos are AI-generated; check your image and video tool's terms before any commercial use.
